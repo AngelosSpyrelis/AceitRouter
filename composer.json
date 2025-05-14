@@ -1,8 +1,18 @@
 {
     "name": "aceitdesign/aceitrouter",
     "description": "A simple router that allows for nested pages as well as middleware before and after th main matching process. It functions on callbacks provided by the routes themselves. It also has support for default behaviour (404 etc)",
+    "keywords": ["router"],
+    "homepage": "https://github.com/AngelosSpyrelis/AceitRouter",
     "type": "library",
     "license": "MIT",
+    "authors": [
+        {
+            "name": "Angelos Spyrelis",
+            "email": "angel@aceitdesign.com",
+            "homepage": "https://aceitdesign.com",
+            "role": "Developer"
+        }
+    ],
     "require": {
         "php": ">=7.0"
     },
