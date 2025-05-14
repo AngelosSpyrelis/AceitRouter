@@ -18,8 +18,8 @@
 
 <h2>📦 Installation</h2>
 
-<h3>1. Copy the router file</h3>
-<pre><code>cp router/AceitRouter.php ./src/</code></pre>
+<h3>1. Copy the router file or add it with composer</h3>
+
 
 <h3>2. Include it in your initialization</h3>
 <p>I recommend creating an <code>init-router.php</code> file:</p>
