@@ -1,5 +1,5 @@
 <?php
-
+namespace AceitDesign\Router;
 class AceitRouter {
     private $prefixes = [];
     private $suffixes = [];
