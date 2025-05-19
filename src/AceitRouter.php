@@ -174,7 +174,7 @@ class AceitRouter {
             $current = &$current[$segment];
         }
 
-        $current[$route] = $callback;
+        $current[$route]['callback'] = $callback;
         return;
     }
 
@@ -233,7 +233,7 @@ class AceitRouter {
             call_user_func($suffix);
         }
 
-        if (!is_callable($routesSearch)) {
+        if (!is_callable($routesSearch['callback'])) {
             error_log("[AceitRouter] ".date('Y-m-d H:i:s')." Provided callback is not callable");
             if(is_callable($this->default)){
                 call_user_func($this->default);
@@ -243,7 +243,7 @@ class AceitRouter {
             }
             return;
         }
-        call_user_func($routesSearch);
+        call_user_func($routesSearch['callback']);
         return;
         
     }
