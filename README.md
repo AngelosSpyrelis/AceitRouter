@@ -132,7 +132,7 @@ $router->setDefault(function() {
 </code></pre>
 
 <h3>4. Add Middleware</h3>
-<pre><code>// Global middleware (runs on all routes)
+// Global middleware (runs on all routes)
 $router->addPrefixes([
   function() { /* CORS headers */ }
 ]);
