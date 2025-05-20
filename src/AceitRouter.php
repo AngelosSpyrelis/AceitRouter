@@ -160,6 +160,41 @@ class AceitRouter {
         
     }
 
+    /**
+    * GET route shortcut
+    */
+    public function get(array $path, $handler, array $middleware = []) {
+        return $this->addRoute($path, $handler, ['GET'], $middleware);
+    }
+
+    /**
+     * POST route shortcut 
+     */
+    public function post(array $path, $handler, array $middleware = []) {
+        return $this->addRoute($path, $handler, ['POST'], $middleware);
+    }
+
+    /**
+     * PUT route shortcut
+     */
+    public function put(array $path, $handler, array $middleware = []) {
+        return $this->addRoute($path, $handler, ['PUT'], $middleware);
+    }
+
+    /**
+     * DELETE route shortcut
+     */
+    public function delete(array $path, $handler, array $middleware = []) {
+        return $this->addRoute($path, $handler, ['DELETE'], $middleware);
+    }
+
+    /**
+     * PATCH route shortcut
+     */
+    public function patch(array $path, $handler, array $middleware = []) {
+        return $this->addRoute($path, $handler, ['PATCH'], $middleware);
+    }
+
 
     /**
      * Summary of handleRequest
