@@ -4,7 +4,6 @@ class AceitRouter {
     private $prefixes = [];
     private $suffixes = [];
 
-    private $middleware = [];
     private $fallback;
     private $routes = [];
 
@@ -72,26 +71,6 @@ class AceitRouter {
         $this->routes = $routes;
     }
 
-
-    /**
-     * Summary of addMiddleware
-     * Adds middleware that can be chained in specific routes
-     * @param array $middleware - An array of callables.
-     * @throws \InvalidArgumentException
-     * @return static
-     */
-    public function addMiddleware(array $middleware){
-        foreach($middleware as $callback){
-            if(!is_callable($callback)){
-             throw new \InvalidArgumentException(
-                    "Middleware must be callable. Received: " . 
-                    (gettype($callback))
-                );
-            }
-            array_push($this->middleware, $callback);
-        }
-        return $this;
-    }
 
     /**
      * Summary of addPrefixes
@@ -175,8 +154,7 @@ class AceitRouter {
             }
             array_push($current['middleware'], $callback);
         }        
-
-        return $this;
+        return;
         
     }
 
