@@ -118,10 +118,11 @@ class AceitRouter {
      * Adds a route to the existing routes. Also, overwrites a route with the same name.
      * @param array $path - The path the route is supposed to go. The last (or only) element should be the route name. 
      * @param mixed $handler - The callback function that will correspond to the route.
+     * @param array $methods    Allowed HTTP methods (default: ['GET'])
      * @param array $middleware - The callbacks that will be chained along with the handler.
      * @throws \InvalidArgumentException - If no valid callback is provided or an invalid path is given (In case of nested paths).
      */
-    public function addRoute(array $path, $handler, array $middleware = []){
+    public function addRoute(array $path, $handler,array $methods = ['GET'], array $middleware = []){
         if(!is_callable($handler)){
             throw new \InvalidArgumentException(
                 "Route callback must be callable. Received: " . 
@@ -144,6 +145,7 @@ class AceitRouter {
         }
 
         $current['handler'] = $handler;
+        $current['methods'] = $methods; 
         $current['middleware'] = [];
         foreach($middleware as $callback){
             if(!is_callable($callback)){
@@ -225,6 +227,7 @@ class AceitRouter {
         foreach ($this->suffixes as $suffix) {
             call_user_func($suffix);
         }
+        
 
         if (!is_callable($lastValidPath['handler'])) {
             error_log("[AceitRouter] ".date('Y-m-d H:i:s')." Provided callback is not callable");
@@ -236,7 +239,11 @@ class AceitRouter {
             }
             return;
         }
-        // 3. Run route-specific middleware
+        $requestMethod = $_SERVER['REQUEST_METHOD'];
+        if (!in_array($requestMethod, $lastValidPath['methods'])) {
+            header('HTTP/1.1 405 Method Not Allowed');
+            die("Method $requestMethod not allowed");
+        }
         foreach ($lastValidPath['middleware'] as $middleware) {
             call_user_func($middleware);
         }
