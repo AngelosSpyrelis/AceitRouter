@@ -31,85 +31,77 @@ $router = new AceitDesign\Router\AceitRouter(
 );
 </code></pre>
 <p>When you create an instance of the router you can choose whether it will convert the entire URI to lowercase before any of the middleware or matching are called. To activate it, you can pass 'true' to the constructor</p>
-<h3>2. Define Routes</h3>
-<pre><code>// Simple route
+<h2>Defining Routes</h2>
+
+<h3>1. Basic Route (GET)</h3>
+<pre><code>// Long form
 $router->addRoute(['home'], function() {
-  echo "Home Page";
+    echo "Welcome Home";
 });
 
-// Route with parameters
-$router->addRoute(['users', '{id}'], function($params) {
-  echo "User ID: " . $params['id'];
-});
-
-// Route with middleware
-$router->addRoute(['admin'], 'AdminController@index', [
-  function() { /* Auth check */ }
-]);
-</code></pre>
-<h2>Route Definition</h2>
-
-<p>To add routes:</p>
-
-<ol>
-  <li>
-    <strong>Pass the entire path as an array</strong>:
-    <pre><code>['about', 'projects']  // Matches /about/projects</code></pre>
-    The router will automatically create nested paths if they don't exist.
-  </li>
-
-  <li>
-    <strong>Provide a handler callable</strong>:
-    <pre><code>$router->addRoute(['about', 'projects'], function() {
-    // Your route logic here
+// Shortcut (recommended)
+$router->get(['home'], function() {
+    echo "Welcome Home";
 });</code></pre>
-    Internally, this creates:
-    <pre><code>[
-    'about' => [
-        'projects' => [
-            'handler' => function() {...}
-        ]
-    ]
-]</code></pre>
-  </li>
-</ol>
 
-<h2>Route Parameters</h2>
+<h3>2. Route with Parameters</h3>
+<pre><code>// With single parameter
+$router->get(['users', '{id}'], function($params) {
+    echo "User ID: " . $params['id'];
+});
 
-<p>To add parameters:</p>
+// With multiple parameters
+$router->get(['posts', '{post_id}', 'comments', '{comment_id}'], 
+    function($params) {
+        // Access params: $params['post_id'], $params['comment_id']
+    }
+);</code></pre>
 
+<h3>3. HTTP Method-Specific Routes</h3>
+<pre><code>// POST route
+$router->post(['contact'], 'ContactController@submit');
+
+// PUT route
+$router->put(['articles', '{id}'], 'ArticleController@update');
+
+// DELETE route
+$router->delete(['articles', '{id}'], 'ArticleController@delete');
+
+// Multiple methods
+$router->addRoute(['products'], 'ProductController@update', ['PUT', 'PATCH']);</code></pre>
+
+<h3>4. Route with Middleware</h3>
+<pre><code>// Single middleware
+$router->get(['admin'], 'AdminController@dashboard', [
+    function() {
+        if (!user_is_admin()) {
+            header('Location: /login');
+            exit;
+        }
+    }
+]);
+
+// Multiple middleware
+$router->post(['orders'], 'OrderController@create', [
+    AuthMiddleware::class,
+    CsrfMiddleware::class
+]);</code></pre>
+
+<h3>5. RESTful Resource Example</h3>
+<pre><code>// User resource routes
+$router->get(['users'], 'UserController@index');          // List users
+$router->get(['users', '{id}'], 'UserController@show');   // View user
+$router->post(['users'], 'UserController@store');         // Create user
+$router->put(['users', '{id}'], 'UserController@update'); // Update user
+$router->delete(['users', '{id}'], 'UserController@delete'); // Delete user</code></pre>
+
+<h3>Key Notes</h3>
 <ul>
-  <li>Enclose parameter names in curly braces <code>{}</code></li>
-  <li>Only one parameter per segment is supported</li>
-  <li>Example:
-    <pre><code>['users', '{id}']  // Matches /users/42</code></pre>
-    Creates:
-    <pre><code>[
-    'users' => [
-        'params' => 'id',
-        // ... nested routes
-    ]
-]</code></pre>
-  </li>
+  <li>Paths are defined as arrays (e.g., <code>['users', '{id}']</code>)</li>
+  <li>Parameters are enclosed in <code>{}</code> (one per segment)</li>
+  <li>Shortcut methods (<code>get()</code>, <code>post()</code>, etc.) default to their respective HTTP methods</li>
+  <li>Use <code>addRoute()</code> when you need custom HTTP methods</li>
 </ul>
-
-<h3>Important Notes About Parameters:</h3>
-
-<ol>
-  <li>The router collects all parameters until the last available handler</li>
-  <li>For <code>['users','{id}','posts','{post_id}']</code>:
-    <ul>
-      <li>Parameters are passed to the last non-parameter segment's handler</li>
-      <li>If only 'users' has a handler, it receives all parameters</li>
-    </ul>
-  </li>
-  <li><strong>Parameter validation is the handler's responsibility</strong></li>
-  <li><strong>Best practice</strong>: Use parameters only for required values</li>
-</ol>
-
-<h3>Adding middleware to routes</h3>
-<p>You can also add middlewae to each route by passing callables to the addRoute method.
-This middleware will be stored in the 'middleware' key in their respective route and each callable will be called in the order they were passed before the handler. Like the rest of the middleware, they return nothing and are passed no arguments. If you want to edit something via middleware, you will have to use the $_SERVER['REQUEST URI'] variable for the URI or $_SESSION for anything else.</p>
 
 <h2>Example Workflow</h2>
 
