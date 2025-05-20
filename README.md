@@ -30,7 +30,7 @@ $router = new AceitDesign\Router\AceitRouter(
   isCaseSensitive: false // Optional (default: false)
 );
 </code></pre>
-<p>When you create an instance of the router you can choose whethe it will convert the entire URI to lowercase before any of the middleware or matching are called. To activate it, you can pass 'true' to the constructor</p>
+<p>When you create an instance of the router you can choose whether it will convert the entire URI to lowercase before any of the middleware or matching are called. To activate it, you can pass 'true' to the constructor</p>
 <h3>2. Define Routes</h3>
 <pre><code>// Simple route
 $router->addRoute(['home'], function() {
@@ -124,7 +124,7 @@ $router->setFallback(function() {
   http_response_code(404);
   echo "Page not found";
 });
-
+<p>You can also set default callbacks for cases where a page is not found or any errors occur.</p>
 // Empty route handler
 $router->setDefault(function() {
   echo "Home Page";
@@ -136,12 +136,6 @@ $router->setDefault(function() {
 $router->addPrefixes([
   function() { /* CORS headers */ }
 ]);
-
-// Route-specific middleware
-$router->addMiddleware([
-  function() { /* Auth check */ }
-]);
-</code></pre>
 
 <h3>5. Handle Requests</h3>
 <pre><code>// In your entry point (e.g. index.php)
