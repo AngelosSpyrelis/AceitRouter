@@ -30,7 +30,7 @@ $router = new AceitDesign\Router\AceitRouter(
   isCaseSensitive: false // Optional (default: false)
 );
 </code></pre>
-
+<p>When you create an instance of the router you can choose whethe it will convert the entire URI to lowercase before any of the middleware or matching are called. To activate it, you can pass 'true' to the constructor</p>
 <h3>2. Define Routes</h3>
 <pre><code>// Simple route
 $router->addRoute(['home'], function() {
@@ -47,7 +47,77 @@ $router->addRoute(['admin'], 'AdminController@index', [
   function() { /* Auth check */ }
 ]);
 </code></pre>
+<h2>Route Definition</h2>
 
+<p>To add routes:</p>
+
+<ol>
+  <li>
+    <strong>Pass the entire path as an array</strong>:
+    <pre><code>['about', 'projects']  // Matches /about/projects</code></pre>
+    The router will automatically create nested paths if they don't exist.
+  </li>
+
+  <li>
+    <strong>Provide a handler callable</strong>:
+    <pre><code>$router->addRoute(['about', 'projects'], function() {
+    // Your route logic here
+});</code></pre>
+    Internally, this creates:
+    <pre><code>[
+    'about' => [
+        'projects' => [
+            'handler' => function() {...}
+        ]
+    ]
+]</code></pre>
+  </li>
+</ol>
+
+<h2>Route Parameters</h2>
+
+<p>To add parameters:</p>
+
+<ul>
+  <li>Enclose parameter names in curly braces <code>{}</code></li>
+  <li>Only one parameter per segment is supported</li>
+  <li>Example:
+    <pre><code>['users', '{id}']  // Matches /users/42</code></pre>
+    Creates:
+    <pre><code>[
+    'users' => [
+        'params' => 'id',
+        // ... nested routes
+    ]
+]</code></pre>
+  </li>
+</ul>
+
+<h3>Important Notes About Parameters:</h3>
+
+<ol>
+  <li>The router collects all parameters until the last available handler</li>
+  <li>For <code>['users','{id}','posts','{post_id}']</code>:
+    <ul>
+      <li>Parameters are passed to the last non-parameter segment's handler</li>
+      <li>If only 'users' has a handler, it receives all parameters</li>
+    </ul>
+  </li>
+  <li><strong>Parameter validation is the handler's responsibility</strong></li>
+  <li><strong>Best practice</strong>: Use parameters only for required values</li>
+</ol>
+
+<h2>Example Workflow</h2>
+
+<pre><code>// Define route with parameters
+$router->addRoute(['users', '{id}', 'posts', '{post_id}'], function($params) {
+    // $params contains both id and post_id
+    echo "User: {$params['id']}, Post: {$params['post_id']}";
+});
+
+// Matches:
+// /users/42/posts/99 → User: 42, Post: 99
+</code></pre>
 <h3>3. Configure Fallbacks (Optional)</h3>
 <pre><code>// 404 Handler
 $router->setFallback(function() {
