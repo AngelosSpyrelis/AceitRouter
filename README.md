@@ -107,6 +107,10 @@ $router->addRoute(['admin'], 'AdminController@index', [
   <li><strong>Best practice</strong>: Use parameters only for required values</li>
 </ol>
 
+<h3>Adding middleware to routes</h3>
+<p>You can also add middlewae to each route by passing callables to the addRoute method.
+This middleware will be stored in the 'middleware' key in their respective route and each callable will be called in the order they were passed before the handler. Like the rest of the middleware, they return nothing and are passed no arguments. If you want to edit something via middleware, you will have to use the $_SERVER['REQUEST URI'] variable for the URI or $_SESSION for anything else.</p>
+
 <h2>Example Workflow</h2>
 
 <pre><code>// Define route with parameters
@@ -133,9 +137,15 @@ $router->setDefault(function() {
 
 <h3>4. Add Middleware</h3>
 // Global middleware (runs on all routes)
-$router->addPrefixes([
+<pre><code>
+  $router->addPrefixes([
   function() { /* CORS headers */ }
 ]);
+ $router->addSuffixes([
+  function() { /* CORS headers */ }
+]);</code>
+</pre>
+
 
 <h3>5. Handle Requests</h3>
 <pre><code>// In your entry point (e.g. index.php)
