@@ -33,8 +33,6 @@ $router = new AceitDesign\Router\AceitRouter(
 <p>When you create an instance of the router you can choose whether it will convert the entire URI to lowercase before any of the middleware or matching are called. To activate it, you can pass 'true' to the constructor</p>
 <h2>Defining Routes</h2>
 
-<h2>Defining Routes</h2>
-
 <h3>1. Basic Route Structure</h3>
 <pre><code>/**
  * Routes are defined as arrays of path segments.
