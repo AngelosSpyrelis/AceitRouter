@@ -30,7 +30,7 @@ $router = new AceitDesign\Router\AceitRouter(
   isCaseSensitive: false // Optional (default: false)
 );
 </code></pre>
-<p>When you create an instance of the router you can choose whethe it will convert the entire URI to lowercase before any of the middleware or matching are called. To activate it, you can pass 'true' to the constructor</p>
+<p>When you create an instance of the router you can choose whether it will convert the entire URI to lowercase before any of the middleware or matching are called. To activate it, you can pass 'true' to the constructor</p>
 <h3>2. Define Routes</h3>
 <pre><code>// Simple route
 $router->addRoute(['home'], function() {
@@ -107,6 +107,10 @@ $router->addRoute(['admin'], 'AdminController@index', [
   <li><strong>Best practice</strong>: Use parameters only for required values</li>
 </ol>
 
+<h3>Adding middleware to routes</h3>
+<p>You can also add middlewae to each route by passing callables to the addRoute method.
+This middleware will be stored in the 'middleware' key in their respective route and each callable will be called in the order they were passed before the handler. Like the rest of the middleware, they return nothing and are passed no arguments. If you want to edit something via middleware, you will have to use the $_SERVER['REQUEST URI'] variable for the URI or $_SESSION for anything else.</p>
+
 <h2>Example Workflow</h2>
 
 <pre><code>// Define route with parameters
@@ -124,7 +128,7 @@ $router->setFallback(function() {
   http_response_code(404);
   echo "Page not found";
 });
-
+<p>You can also set default callbacks for cases where a page is not found or any errors occur.</p>
 // Empty route handler
 $router->setDefault(function() {
   echo "Home Page";
@@ -132,16 +136,16 @@ $router->setDefault(function() {
 </code></pre>
 
 <h3>4. Add Middleware</h3>
-<pre><code>// Global middleware (runs on all routes)
-$router->addPrefixes([
+// Global middleware (runs on all routes)
+<pre><code>
+  $router->addPrefixes([
   function() { /* CORS headers */ }
 ]);
+ $router->addSuffixes([
+  function() { /* CORS headers */ }
+]);</code>
+</pre>
 
-// Route-specific middleware
-$router->addMiddleware([
-  function() { /* Auth check */ }
-]);
-</code></pre>
 
 <h3>5. Handle Requests</h3>
 <pre><code>// In your entry point (e.g. index.php)
