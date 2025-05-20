@@ -33,76 +33,91 @@ $router = new AceitDesign\Router\AceitRouter(
 <p>When you create an instance of the router you can choose whether it will convert the entire URI to lowercase before any of the middleware or matching are called. To activate it, you can pass 'true' to the constructor</p>
 <h2>Defining Routes</h2>
 
-<h3>1. Basic Route (GET)</h3>
-<pre><code>// Long form
-$router->addRoute(['home'], function() {
-    echo "Welcome Home";
-});
+<h2>Defining Routes</h2>
 
-// Shortcut (recommended)
-$router->get(['home'], function() {
-    echo "Welcome Home";
+<h3>1. Basic Route Structure</h3>
+<pre><code>/**
+ * Routes are defined as arrays of path segments.
+ * Example: '/about/team' becomes ['about', 'team']
+ */
+$router->addRoute(['about', 'team'], function() {
+    echo "Our Team Page";
 });</code></pre>
 
-<h3>2. Route with Parameters</h3>
-<pre><code>// With single parameter
+<h3>2. Route Handlers</h3>
+<pre><code>/**
+ * The handler is stored under the last path segment.
+ * For ['about', 'team'], the structure becomes:
+ * [
+ *   'about' => [
+ *     'team' => [
+ *       'handler' => yourCallable
+ *     ]
+ *   ]
+ * ]
+ */
+$router->get(['products'], 'ProductController@index');</code></pre>
+
+<h3>3. Route Parameters</h3>
+<pre><code>/**
+ * Parameters are enclosed in {} and stored in the 'params' key.
+ * Only one parameter per segment is supported.
+ * Example: ['users', '{id}'] stores 'id' in the 'users' segment.
+ */
 $router->get(['users', '{id}'], function($params) {
-    echo "User ID: " . $params['id'];
+    echo "User ID: " . htmlspecialchars($params['id']);
 });
 
-// With multiple parameters
-$router->get(['posts', '{post_id}', 'comments', '{comment_id}'], 
-    function($params) {
-        // Access params: $params['post_id'], $params['comment_id']
-    }
-);</code></pre>
+/**
+ * Important: The router collects all parameters until the last handler.
+ * For ['users','{id}','posts','{post_id}'], all params are passed
+ * to the final handler.
+ */</code></pre>
 
-<h3>3. HTTP Method-Specific Routes</h3>
-<pre><code>// POST route
-$router->post(['contact'], 'ContactController@submit');
+<h3>4. HTTP Method Handling</h3>
+<pre><code>/**
+ * Methods are stored with each route definition.
+ * Defaults to ['GET'] if not specified.
+ */
+$router->addRoute(['contact'], 'FormController@submit', ['POST']);
 
-// PUT route
-$router->put(['articles', '{id}'], 'ArticleController@update');
+// Shortcut methods automatically set the HTTP method:
+$router->post(['login'], 'AuthController@login');  // Sets ['POST']
+$router->put(['profile'], 'UserController@update'); // Sets ['PUT']</code></pre>
 
-// DELETE route
-$router->delete(['articles', '{id}'], 'ArticleController@delete');
-
-// Multiple methods
-$router->addRoute(['products'], 'ProductController@update', ['PUT', 'PATCH']);</code></pre>
-
-<h3>4. Route with Middleware</h3>
-<pre><code>// Single middleware
-$router->get(['admin'], 'AdminController@dashboard', [
+<h3>5. Middleware Integration</h3>
+<pre><code>/**
+ * Middleware is stored with its route and executed before the handler.
+ * Global middleware should use addPrefixes() instead.
+ */
+$router->get(['admin'], 'AdminController@index', [
     function() {
-        if (!user_is_admin()) {
+        if (!is_admin()) {
             header('Location: /login');
             exit;
         }
     }
-]);
-
-// Multiple middleware
-$router->post(['orders'], 'OrderController@create', [
-    AuthMiddleware::class,
-    CsrfMiddleware::class
 ]);</code></pre>
 
-<h3>5. RESTful Resource Example</h3>
-<pre><code>// User resource routes
-$router->get(['users'], 'UserController@index');          // List users
-$router->get(['users', '{id}'], 'UserController@show');   // View user
-$router->post(['users'], 'UserController@store');         // Create user
-$router->put(['users', '{id}'], 'UserController@update'); // Update user
-$router->delete(['users', '{id}'], 'UserController@delete'); // Delete user</code></pre>
+<h3>Complete Example</h3>
+<pre><code>/**
+ * RESTful user resource with parameters and middleware
+ */
+$router->get(['users'], 'UserController@index'); // GET /users
+$router->post(['users'], 'UserController@store', [AuthMiddleware::class]); // POST /users
+$router->get(['users', '{id}'], function($params) {
+    // $params contains ['id' => value]
+}); // GET /users/42
+$router->put(['users', '{id}'], 'UserController@update'); // PUT /users/42
+$router->delete(['users', '{id}'], 'UserController@delete'); // DELETE /users/42</code></pre>
 
-<h3>Key Notes</h3>
+<h3>Implementation Notes</h3>
 <ul>
-  <li>Paths are defined as arrays (e.g., <code>['users', '{id}']</code>)</li>
-  <li>Parameters are enclosed in <code>{}</code> (one per segment)</li>
-  <li>Shortcut methods (<code>get()</code>, <code>post()</code>, etc.) default to their respective HTTP methods</li>
-  <li>Use <code>addRoute()</code> when you need custom HTTP methods</li>
+  <li><strong>Path Segments</strong>: Always use arrays, e.g., <code>['path', 'to', 'route']</code></li>
+  <li><strong>Parameters</strong>: Must be enclosed in <code>{}</code> (one per segment)</li>
+  <li><strong>Handlers</strong>: Receive parameters as an associative array</li>
+  <li><strong>Shortcuts</strong>: <code>get()</code>, <code>post()</code>, etc. are preferred over <code>addRoute()</code></li>
 </ul>
-
 <h2>Example Workflow</h2>
 
 <pre><code>// Define route with parameters
