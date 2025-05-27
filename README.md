@@ -109,6 +109,20 @@ $router->get(['users', '{id}'], function($params) {
 $router->put(['users', '{id}'], 'UserController@update'); // PUT /users/42
 $router->delete(['users', '{id}'], 'UserController@delete'); // DELETE /users/42</code></pre>
 
+
+<p>You can also skip the addRoute method, and use the setRoutes() method instead. This will accept a named array (nested or not) with all the routes in one go. If you are confident you have made no errors you can do something like:
+</p>
+<pre><code>
+  [
+    'about' => [
+      'team' => [
+       'handler' => yourCallable,
+        'middleware'=>[callable array]
+      ],
+      'company'=>['handler'=>callable]
+    ]
+  ]
+</code></pre>
 <h3>Implementation Notes</h3>
 <ul>
   <li><strong>Path Segments</strong>: Always use arrays, e.g., <code>['path', 'to', 'route']</code></li>
