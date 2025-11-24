@@ -20,5 +20,6 @@
         "psr-4": {
             "AceitDesign\\Router\\": "src/"
         }
-    }
+    },
+    "minimum-stability": "dev"| "alpha"| "beta"| "RC"|"stable", //stable
 }
